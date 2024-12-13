@@ -25,13 +25,16 @@ O sistema oferece funcionalidades completas para gerenciar diversos aspectos da 
 
 1. Clone o repositório: `git clone <repositório>`
 2. Acesse a pasta do projeto: `cd <pasta-do-projeto>`
-3. Instale as dependências: `npm install` (ou `yarn install`)
+3. Instale as dependências: `npm install`
 
 ### Configuração
 
 1. **Arquivo `.env`:**
     - Crie um arquivo `.env` na raiz do projeto.
     - Defina a variável de ambiente `API_ENDPOINT` com o endereço da sua API.
+      - Exemplo: API_ENDPOINT=http://localhost:3000
+    - Defina a variável de ambiente `PORT` com a porta que a aplicação deve rodar.
+      - Exemplo: PORT=8080
 2. **Configuração da API:**
     - Certifique-se de que a API esteja configurada para lidar com as requisições do sistema.
 
