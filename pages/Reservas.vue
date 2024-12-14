@@ -67,7 +67,7 @@
                   required
                 ></v-select>
               </v-col>
-              <v-col cols="12" sm="6">
+              <!-- <v-col cols="12" sm="6">
                 <v-select
                   v-model="editedItem.acomodacaoId"
                   :items="acomodacoes"
@@ -76,7 +76,7 @@
                   label="Acomodação"
                   required
                 ></v-select>
-              </v-col>
+              </v-col> -->
               <v-col cols="12" sm="6">
                 <v-menu
                   ref="menuDataEntrada"
@@ -176,7 +176,7 @@
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="12">
+              <!-- <v-col cols="12">
                 <v-autocomplete
                   v-model="editedItem.hospedeIds"
                   :items="hospedes"
@@ -186,7 +186,7 @@
                   multiple
                   chips
                 ></v-autocomplete>
-              </v-col>
+              </v-col> -->
             </v-row>
           </v-container>
         </v-card-text>
@@ -235,8 +235,6 @@ export default {
       editedIndex: -1,
       editedItem: {
         usuarioId: null,
-        acomodacaoId: null,
-        hospedeIds: [],
         dataEntrada: new Date().toISOString().substr(0, 10),
         dataSaida: new Date().toISOString().substr(0, 10),
         status: "EM PROCESSAMENTO",
@@ -377,12 +375,22 @@ export default {
     },
     save() {
       if (this.editedIndex > -1) {
+        // Remover campos indesejados
+        const itemToSave = { ...this.editedItem };
+        delete itemToSave.id;
+        delete itemToSave.createdAt;
+        delete itemToSave.updatedAt;
+        delete itemToSave.deletedAt;
+        delete itemToSave.usuario;
+        delete itemToSave.acomodacao;
+        delete itemToSave.hospedes;
+        delete itemToSave.acomodacaoId;
+        delete itemToSave.hospedeIds;
+
         // Atualizar reserva existente
+        console.log(itemToSave)
         this.$axios
-          .put(`/reserva/${this.editedItem.id}`, {
-            // Envie os dados necessários para a API, incluindo usuarioId, acomodacaoId, hospedeIds, etc.
-            ...this.editedItem,
-          })
+          .put(`/reserva/${this.editedItem.id}`, itemToSave)
           .then(() => {
             Object.assign(this.reservas[this.editedIndex], this.editedItem);
             this.close();
@@ -402,6 +410,7 @@ export default {
           })
           .then((response) => {
             this.reservas.push(response.data);
+            this.fetchReservas();
             this.close();
           })
           .catch((error) => {
