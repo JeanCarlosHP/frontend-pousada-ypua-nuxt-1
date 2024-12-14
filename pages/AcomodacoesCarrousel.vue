@@ -28,7 +28,7 @@
             <v-carousel-item
               v-for="(acomodacao, index) in acomodacoes"
               :key="index"
-              @click="openModal(acomodacao)"
+              
             >
               <v-card class="fill-height">
                 <v-img
@@ -41,6 +41,7 @@
                   "
                   height="400"
                   cover
+                  @click="openModal(acomodacao)"
                 ></v-img>
                 <v-card-title class="text-h5">
                   {{ acomodacao.nome }}
@@ -53,10 +54,13 @@
                 </v-card-text>
 
                 <v-card-actions>
-                  <v-btn color="primary" @click="editItem(acomodacao)">
+                  <v-btn color="primary" @click="openModal(acomodacao)">
+                    Detalhes
+                  </v-btn>
+                  <v-btn v-if="isAuthenticated && isAdmin" color="primary" @click="editItem(acomodacao)">
                     Editar
                   </v-btn>
-                  <v-btn color="error" @click="deleteItem(acomodacao)">
+                  <v-btn v-if="isAuthenticated && isAdmin" color="error" @click="deleteItem(acomodacao)">
                     Excluir
                   </v-btn>
                 </v-card-actions>
@@ -404,7 +408,6 @@
 
 <script>
 export default {
-  // middleware: 'auth',
   data() {
     return {
       modalAcomodacao: false, // Controla a visibilidade do modal
@@ -487,8 +490,7 @@ export default {
   },
   methods: {
     encodeBase64(buffer) {
-      console.log("acomodacao.fotos")
-      return btoa(String.fromCharCode(...buffer));
+      return new Buffer.from(buffer).toString('base64');
     },
     async fetchAcomodacoes() {
       try {
@@ -504,11 +506,12 @@ export default {
       this.editedIndex = this.acomodacoes.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
+      this.modalAcomodacao = false;
     },
     deleteItem(item) {
       const index = this.acomodacoes.indexOf(item);
       confirm("Tem certeza que deseja excluir esta acomodação?") &&
-        api
+        this.$axios
           .delete(`/acomodacao/${item.id}`)
           .then(() => {
             this.acomodacoes.splice(index, 1);
@@ -563,7 +566,8 @@ export default {
             },
           });
           // Adiciona a nova acomodação à lista
-          this.acomodacoes.push(response.data);
+          this.acomodacoes.push(response.data.acomodacao);
+          this.currentAcomodacao = this.acomodacoes.length - 1;
         }
         this.close();
       } catch (error) {
