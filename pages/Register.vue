@@ -35,7 +35,7 @@
               ></v-text-field>
               <v-text-field
                 v-model="password"
-                :rules="[v => !!v || 'Senha é obrigatória', v => v.length >= 6 || 'Senha deve ter pelo menos 6 caracteres']"
+                :rules="[v => !!v || 'Senha é obrigatória', v => v.length >= 6 || 'Senha deve ter pelo menos 8 caracteres']"
                 label="Senha"
                 type="password"
                 required
@@ -80,12 +80,13 @@
                 label="Cidade"
                 required
               ></v-text-field>
-              <v-text-field
+              <v-select
                 v-model="estado"
+                :items="estados"
                 :rules="[v => !!v || 'Estado é obrigatório']"
                 label="Estado"
                 required
-              ></v-text-field>
+              ></v-select>
               <v-text-field
                 v-model="pais"
                 :rules="[v => !!v || 'País é obrigatório']"
@@ -105,8 +106,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   data() {
     return {
@@ -123,6 +122,12 @@ export default {
       cidade: '',
       estado: '',
       pais: '',
+      estados: [
+        'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 
+        'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 
+        'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 
+        'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+      ],
       showAlert: false,
       errorMessage: "",
     };
@@ -131,10 +136,10 @@ export default {
     async register() {
       if (this.$refs.form.validate()) {
         try {
-          const response = await axios.post('/usuario', {
-            name: this.name,
+          const response = await this.$axios.post('/usuario', {
+            nome: this.name,
             email: this.email,
-            password: this.password,
+            senha: this.password,
             cpf: this.cpf,
             rg: this.rg,
             rua: this.rua,
