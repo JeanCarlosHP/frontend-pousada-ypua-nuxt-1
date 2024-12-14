@@ -18,17 +18,15 @@
         <v-card>
           <v-card-title>
             Check-outs
-            <v-spacer />
-            <v-btn color="primary" @click="dialog = true">Novo Check-out</v-btn>
           </v-card-title>
           <v-data-table
             :headers="headers"
-            :items="checkouts"
+            :items="reservas"
             :items-per-page="5"
             class="elevation-1"
           >
             <template v-slot:item.reserva="{ item }">
-              {{ item.reserva.codigo }}
+              {{ item.codigo }}
             </template>
             <template v-slot:item.hospedes="{ item }">
               <span v-for="hospede in item.hospedes" :key="hospede.id">
@@ -36,10 +34,7 @@
               </span>
             </template>
             <template v-slot:item.acoes="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)"
-              >mdi-pencil</v-icon
-              >
-              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+              <v-btn color="primary" @click="realizarCheckout(item)">Realizar Check-out</v-btn>
             </template>
           </v-data-table>
         </v-card>
@@ -135,26 +130,17 @@ export default {
     },
   },
   mounted() {
-    this.fetchCheckouts();
     this.fetchReservas();
     this.fetchAcomodacoes();
     this.fetchHospedes();
   },
   methods: {
-    async fetchCheckouts() {
-      try {
-        const response = await this.$axios.post("/checkout");
-        this.checkouts = response.data;
-      } catch (error) {
-        this.errorMessage = error.response.data.message;
-        this.showAlert = true;
-        console.error(error);
-      }
-    },
     async fetchReservas() {
       try {
         const response = await this.$axios.get("/reserva");
-        this.reservas = response.data;
+        this.reservas = response.data.filter(
+          (reserva) => reserva.status === "EM PROCESSAMENTO"
+        );
       } catch (error) {
         this.errorMessage = error.response.data.message;
         this.showAlert = true;
@@ -181,15 +167,20 @@ export default {
         console.error(error);
       }
     },
-    editItem(item) {
-      this.editedIndex = this.checkouts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
-    },
-    deleteItem(item) {
-      const index = this.checkouts.indexOf(item);
-      if (index > -1) {
-        this.checkouts.splice(index, 1);
+    async realizarCheckout(item) {
+      try {
+        confirm(
+          `Tem certeza de que deseja realizar o checkout da reserva ${item.codigo}?`
+        ) &&
+          (await this.$axios.post(`/checkout`, null, {
+            params: {
+              codigo: item.codigo,
+            },
+          }));
+        this.fetchReservas();
+      } catch (error) {
+        this.showAlert = true;
+        this.errorMessage = error.response.data.message;
       }
     },
     close() {
@@ -197,36 +188,7 @@ export default {
       this.editedItem = Object.assign({}, this.defaultItem);
       this.editedIndex = -1;
     },
-    async save() {
-      try {
-        if (!this.editedItem.reservaId) {
-          this.errorMessage = "Por favor, selecione uma reserva.";
-          this.showAlert = true;
-          return;
-        }
-
-        const reservaSelecionada = this.reservas.find(
-          (reserva) => reserva.id === this.editedItem.reservaId
-        );
-
-        if (!reservaSelecionada) {
-          this.errorMessage = "Reserva selecionada inválida.";
-          this.showAlert = true;
-          return;
-        }
-
-        const payload = { codigo: reservaSelecionada.codigo };
-
-        const response = await this.$axios.post("/checkout", payload);
-
-        this.checkouts.push(response.data);
-        this.close();
-      } catch (error) {
-        this.errorMessage = error.response?.data?.message || "Erro ao realizar o check-out.";
-        this.showAlert = true;
-        console.error(error);
-      }
-    }
+    save() {},
   },
 };
 </script>
