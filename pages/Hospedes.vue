@@ -179,8 +179,13 @@ export default {
     },
     save() {
       if (this.editedIndex > -1) {
+        const itemToSave = { ...this.editedItem };
+        delete itemToSave.createdAt;
+        delete itemToSave.updatedAt;
+        delete itemToSave.deletedAt;
+
         this.$axios
-          .put(`/hospede/${this.editedItem.id}`, this.editedItem) // Substitua pelo endpoint da sua API
+          .put(`/hospede/${this.editedItem.id}`, itemToSave) // Substitua pelo endpoint da sua API
           .then(() => {
             Object.assign(this.hospedes[this.editedIndex], this.editedItem);
             this.close();
@@ -195,6 +200,7 @@ export default {
           .post(`/hospede/`, this.editedItem) // Substitua pelo endpoint da sua API
           .then((response) => {
             this.hospedes.push(response.data);
+            this.fetchHospedes();
             this.close();
           })
           .catch((error) => {
