@@ -306,6 +306,7 @@ export default {
           .post("/usuario", this.editedItem)
           .then((response) => {
             this.usuarios.push(response.data);
+            this.fetchUsuarios();
             this.close();
           })
           .catch((error) => {
