@@ -10,5 +10,5 @@ COPY . .
 
 EXPOSE 3000
 
-RUN npm run build
-CMD [ "npm", "run", "start" ]
+RUN npx nuxt build
+CMD [ "npx", "nuxt", "start" ]
