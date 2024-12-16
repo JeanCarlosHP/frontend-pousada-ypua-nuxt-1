@@ -8,7 +8,8 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 8080
 
 RUN npx nuxt build
-CMD [ "npx", "nuxt", "start" ]
+
+ENTRYPOINT ["npx", "nuxt", "start"]
