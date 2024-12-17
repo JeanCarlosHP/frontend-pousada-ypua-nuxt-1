@@ -67,7 +67,7 @@
                   required
                 ></v-select>
               </v-col>
-              <!-- <v-col cols="12" sm="6">
+              <v-col cols="12" sm="6">
                 <v-select
                   v-model="editedItem.acomodacaoId"
                   :items="acomodacoes"
@@ -76,7 +76,7 @@
                   label="Acomodação"
                   required
                 ></v-select>
-              </v-col> -->
+              </v-col>
               <v-col cols="12" sm="6">
                 <v-menu
                   ref="menuDataEntrada"
@@ -176,7 +176,7 @@
                   required
                 ></v-text-field>
               </v-col>
-              <!-- <v-col cols="12">
+              <v-col cols="12">
                 <v-autocomplete
                   v-model="editedItem.hospedeIds"
                   :items="hospedes"
@@ -186,7 +186,7 @@
                   multiple
                   chips
                 ></v-autocomplete>
-              </v-col> -->
+              </v-col>
             </v-row>
           </v-container>
         </v-card-text>
